@@ -1,0 +1,87 @@
+services:
+
+  ################################ D A T A - B A S E S ################################
+
+  cp-postgres:
+    image: postgres:15-alpine
+    container_name: cp-postgres
+    environment:
+      POSTGRES_DB: cp-db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  cp-rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: cp-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: secret
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  cp-pgadmin:
+    image: dpage/pgadmin4
+    container_name: cp-pgadmin
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: example@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: secret
+    depends_on:
+      - cp-postgres
+
+  ################################ B R O K E R S ################################
+
+  cp-kafka:
+    image: apache/kafka:3.7.0
+    container_name: cp-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_LISTENERS: 'INTERNAL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:29093'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://cp-kafka:9093,EXTERNAL://localhost:9092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@localhost:29093' # Исправлено с 127.0.0.1
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  ################################ M I C R O - S E R V I C E S ################################
+
+  Merchant-Service:
+    image: merchant-service
+    build:
+      context: .
+      dockerfile: ./Merchant-Service/Dockerfile
+    container_name: merchant-service
+    ports:
+      - "8081:8081"
+    environment:
+      SERVER_PORT: 8081
+
+      # Исправлено: имя хоста cp-postgres (соответствует названию сервиса выше) и база cp-db
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://cp-postgres:5432/cp-db"
+      SPRING_DATASOURCE_USERNAME: "admin"
+      SPRING_DATASOURCE_PASSWORD: "secret"
+
+      # Внутри Docker-сети микросервис общается с Kafka через внутренний порт 9093
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "cp-kafka:9093"
+
+      SPRING_RABBITMQ_HOST: "cp-rabbitmq"
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: "admin"
+      SPRING_RABBITMQ_PASSWORD: "secret"
+    depends_on:
+      - cp-postgres
+      - cp-kafka
+      - cp-rabbitmq
+
+volumes:
+  pgdata:
