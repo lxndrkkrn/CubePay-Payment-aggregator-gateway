@@ -23,8 +23,8 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @NotBlank
+    @NotNull @NotBlank
+    @Column(unique = true, nullable = false)
     private String uuid;
 
     @NotNull
@@ -50,6 +50,10 @@ public class Transaction {
     @Positive
     @DecimalMin("0.01")
     private BigDecimal amount;
+
+    @NotNull
+    @PositiveOrZero
+    private BigDecimal commissionAmount = BigDecimal.ZERO;
 
     @NotNull
     @NotBlank

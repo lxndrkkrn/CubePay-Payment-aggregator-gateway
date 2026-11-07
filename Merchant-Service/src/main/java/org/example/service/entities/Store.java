@@ -16,9 +16,10 @@ import java.util.UUID;
 @Table(name = "stores", indexes = {
         @Index(name = "idx_store_uuid", columnList = "uuid", unique = true)
 })
-@ToString(exclude = "secretKey") // Чтобы случайно не вывелся в логах
+@ToString(exclude = "secretKey")
 @Getter
 @Setter
+
 public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,9 +30,10 @@ public class Store {
     private String uuid;
 
     @NotNull @NotBlank
-    private String status = "ACTIVE";
+    private String status = "NEW"; // or ACTIVE, DISABLE, BANNED, ERROR, STOP and more...
 
     @NotNull
+    @Column(unique = true, nullable = false)
     private Long balanceId;
 
     @NotNull

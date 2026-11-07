@@ -9,6 +9,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/Balance-Service" />
             <option value="$PROJECT_DIR$/Merchant-Service" />
             <option value="$PROJECT_DIR$/lib-common-exceptions" />
             <option value="$PROJECT_DIR$/lib-configurations" />

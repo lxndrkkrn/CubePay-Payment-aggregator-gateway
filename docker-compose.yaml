@@ -83,5 +83,33 @@ services:
       - cp-kafka
       - cp-rabbitmq
 
+  Balance-Service:
+    image: balance-service
+    build:
+      context: .
+      dockerfile: ./Balance-Service/Dockerfile
+    container_name: balance-service
+    ports:
+      - "8082:8082"
+    environment:
+      SERVER_PORT: 8082
+
+      # Исправлено: имя хоста cp-postgres (соответствует названию сервиса выше) и база cp-db
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://cp-postgres:5432/cp-db"
+      SPRING_DATASOURCE_USERNAME: "admin"
+      SPRING_DATASOURCE_PASSWORD: "secret"
+
+      # Внутри Docker-сети микросервис общается с Kafka через внутренний порт 9093
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "cp-kafka:9093"
+
+      SPRING_RABBITMQ_HOST: "cp-rabbitmq"
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: "admin"
+      SPRING_RABBITMQ_PASSWORD: "secret"
+    depends_on:
+      - cp-postgres
+      - cp-kafka
+      - cp-rabbitmq
+
 volumes:
   pgdata:
