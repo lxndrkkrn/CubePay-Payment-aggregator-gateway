@@ -1,0 +1,23 @@
+package org.example.balance.components.statusstrategy;
+
+import lombok.extern.slf4j.Slf4j;
+import org.example.exceptions.domain.client.BadRequest;
+import org.example.balance.entities.Balance;
+import org.example.balance.enums.balance.BalanceOperation;
+import org.example.balance.enums.balance.BalanceStatus;
+import org.springframework.stereotype.Component;
+
+@Component
+@Slf4j
+
+public class BannedBalanceStrategy {
+
+    public BalanceStatus getSupportedStatus() {
+        return BalanceStatus.BANNED;
+    }
+
+    public void validate(Balance balance, BalanceOperation operation) {
+        throw new BadRequest("Баланс заблокирован навсегда, операции не доступны.");
+    }
+
+}
