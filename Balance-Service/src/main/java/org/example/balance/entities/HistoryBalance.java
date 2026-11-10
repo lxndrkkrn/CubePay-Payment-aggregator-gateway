@@ -30,7 +30,7 @@ public class HistoryBalance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull @NotBlank
+    @NotNull
     @Column(unique = true, nullable = false)
     private String uuid;
 
