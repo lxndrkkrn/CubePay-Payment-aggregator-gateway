@@ -1,4 +1,4 @@
-package org.example.balance.dtos.outbox;
+package org.example.balance.dtos.outbox.balancelifecycle;
 
 public record ChangeBalanceStatusOutboxDto(
         Long balanceId,

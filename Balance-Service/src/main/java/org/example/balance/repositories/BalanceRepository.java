@@ -31,4 +31,6 @@ public interface BalanceRepository extends JpaRepository<Balance, Long> {
 
     List<Balance> findByStatus(BalanceStatus status);
 
+    Optional<Balance> findFirstByIsSystemTrue();
+
 }

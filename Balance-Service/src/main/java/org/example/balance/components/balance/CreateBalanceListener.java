@@ -11,6 +11,6 @@ import org.springframework.stereotype.Component;
 
 public class CreateBalanceListener {
 
-    private final KafkaTemplate<Object, String> kafkaTemplate;
+    //private final KafkaTemplate<Object, String> kafkaTemplate;
 
 }

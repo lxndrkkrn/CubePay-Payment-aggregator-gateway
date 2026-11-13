@@ -55,4 +55,10 @@ public class FindBalanceService {
         return balanceRepository.findByStatus(status);
     }
 
+    @Transactional(propagation = Propagation.MANDATORY, readOnly = true)
+    public Balance findFirstSystemBalance() {
+        return balanceRepository.findFirstByIsSystemTrue()
+                .orElseThrow(() -> new NotFound("Системный баланс не найден"));
+    }
+
 }

@@ -78,7 +78,7 @@ public class ChangeBalanceService {
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public void addHoldFunds(Long id, BigDecimal amount, String idempotencyKey) {
+    public void addHoldFunds(Long id, BigDecimal amount, String description, String idempotencyKey) {
         log.info("Блокировка баланса ID {} для добавления замороженной суммы {}", id, amount);
 
         validateCommonInput(id, amount, idempotencyKey);
@@ -98,12 +98,12 @@ public class ChangeBalanceService {
         balance.setHoldBalance(newBalance);
 
         balanceRepository.save(balance);
-        historyBalanceService.createBalanceLog(id, HistoryOperationType.CREDIT, HistoryBucketType.HOLD, amount, balanceBefore, newBalance, null, idempotencyKey);
+        historyBalanceService.createBalanceLog(id, HistoryOperationType.CREDIT, HistoryBucketType.HOLD, amount, balanceBefore, newBalance, description, idempotencyKey);
         log.info("Баланс успешно обновлен. Новый замароженный баланс: {}", newBalance);
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public void takeHoldFunds(Long id, BigDecimal amount, String idempotencyKey) {
+    public void takeHoldFunds(Long id, BigDecimal amount, String description, String idempotencyKey) {
         log.info("Блокировка баланса ID {} для вычитания замороженной суммы {}", id, amount);
 
         validateCommonInput(id, amount, idempotencyKey);
@@ -127,7 +127,7 @@ public class ChangeBalanceService {
         balance.setHoldBalance(newBalance);
 
         balanceRepository.save(balance);
-        historyBalanceService.createBalanceLog(id, HistoryOperationType.DEBIT, HistoryBucketType.HOLD, amount, balanceBefore, newBalance, null, idempotencyKey);
+        historyBalanceService.createBalanceLog(id, HistoryOperationType.DEBIT, HistoryBucketType.HOLD, amount, balanceBefore, newBalance, description, idempotencyKey);
         log.info("Баланс успешно обновлен. Новый замароженный баланс: {}", newBalance);
     }
 

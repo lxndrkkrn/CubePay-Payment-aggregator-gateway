@@ -4,19 +4,16 @@ import dto.balance.ChangeBalanceStatusDto;
 import dto.balance.CreateStoreBalanceDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.balance.dtos.outbox.ChangeBalanceStatusOutboxDto;
-import org.example.balance.dtos.outbox.CreateStoreBalanceOutboxDto;
-import org.example.balance.dtos.outbox.CreateSystemBalanceOutboxDto;
+import org.example.balance.dtos.outbox.balancelifecycle.ChangeBalanceStatusOutboxDto;
+import org.example.balance.dtos.outbox.balancelifecycle.CreateStoreBalanceOutboxDto;
+import org.example.balance.dtos.outbox.balancelifecycle.CreateSystemBalanceOutboxDto;
 import org.example.balance.entities.Balance;
 import org.example.balance.enums.balance.BalanceStatus;
 import org.example.balance.servicies.domain.balance.BalanceService;
-import org.example.balance.servicies.domain.balance.BalanceStatusValidator;
 import org.example.balance.servicies.domain.outbox.BalanceOutboxService;
 import org.example.exceptions.domain.client.BadRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import tools.jackson.databind.ObjectMapper;
 
 @Service
 @Slf4j
