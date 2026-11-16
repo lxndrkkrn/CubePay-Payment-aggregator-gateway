@@ -174,6 +174,49 @@ public class ChangeBalanceService {
         log.info("Баланс обновлен: деньги разморожены. Hold balance: {}; Available balance: {}", newHoldBalance, newAvailableBalance);
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void releaseAvailableFunds(Long id, BigDecimal amount, String description, String idempotencyKey) {
+        log.info("Замораживание денег ({}) у баланса {}", amount, id);
+
+        validateCommonInput(id, amount, idempotencyKey);
+
+        Balance balance = balanceRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new NotFound("Баланс не найден"));
+
+        if (Boolean.TRUE.equals(balance.getIsSystem())) {
+            throw new BadRequest("У системного счёта не может быть замороженных средств");
+        }
+
+        balanceStatusValidator.validate(balance, BalanceOperation.TAKE_AVAILABLE);
+        balanceStatusValidator.validate(balance, BalanceOperation.ADD_HOLD);
+
+        BigDecimal holdBalanceBefore = balance.getHoldBalance();
+        BigDecimal availableBalanceBefore = balance.getAvailableBalance();
+
+        if (availableBalanceBefore.compareTo(amount) < 0) {
+            throw new PaymentRequired("Недостаточно доступного баланса для заморозки");
+        }
+
+        BigDecimal newHoldBalance = holdBalanceBefore.add(amount);
+        BigDecimal newAvailableBalance = availableBalanceBefore.subtract(amount);
+
+        balance.setHoldBalance(newHoldBalance);
+        balance.setAvailableBalance(newAvailableBalance);
+
+        balanceRepository.save(balance);
+
+        historyBalanceService.createBalanceLog(
+                id, HistoryOperationType.CREDIT, HistoryBucketType.HOLD,
+                amount, holdBalanceBefore, newHoldBalance, description, idempotencyKey + "_CREDIT_HOLD"
+        );
+        historyBalanceService.createBalanceLog(
+                id, HistoryOperationType.DEBIT, HistoryBucketType.AVAILABLE,
+                amount, availableBalanceBefore, newAvailableBalance, description, idempotencyKey + "_DEBIT_AVAILABLE"
+        );
+
+        log.info("Баланс обновлен: деньги заморожены. Hold balance: {}; Available balance: {}", newHoldBalance, newAvailableBalance);
+    }
+
     private void validateCommonInput(Long id, BigDecimal amount, String idempotencyKey) {
         if (idempotencyKey == null || idempotencyKey.isBlank()) {
             throw new BadRequest("idempotencyKey не должен быть пустым");
