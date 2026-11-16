@@ -26,6 +26,12 @@ public class FindBalanceService {
                 .orElseThrow(() -> new NotFound("Баланс не найден"));
     }
 
+    @Transactional(propagation = Propagation.MANDATORY, readOnly = true)
+    public Balance findById(Long id) {
+        return balanceRepository.findById(id)
+                .orElseThrow(() -> new NotFound("Баланс не найден"));
+    }
+
     @Transactional(propagation = Propagation.MANDATORY)
     public Balance findByIdForUpdate(String uuid) {
         return balanceRepository.findByUuidForUpdate(uuid)
