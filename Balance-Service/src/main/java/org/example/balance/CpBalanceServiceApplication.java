@@ -5,6 +5,7 @@ import org.example.webSocket.WebSocketConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
+import org.springframework.kafka.annotation.EnableKafka;
 
 @SpringBootApplication(scanBasePackages = "org.example.balance")
 
