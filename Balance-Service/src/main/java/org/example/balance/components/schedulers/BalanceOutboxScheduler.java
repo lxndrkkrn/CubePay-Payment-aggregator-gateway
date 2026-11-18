@@ -27,7 +27,7 @@ public class BalanceOutboxScheduler  {
     private final BalanceOutboxService balanceOutboxService;
     private final FindBalanceOutboxService findBalanceOutboxService;
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, String> stringKafkaTemplate;
 
     private final Map<String, String> EVENT_MAP = Map.of(
             "CREATE_STORE_BALANCE", "store-balance-created-topic",
@@ -59,7 +59,7 @@ public class BalanceOutboxScheduler  {
             }
 
             try {
-                kafkaTemplate.send(topic, outbox.getIdempotentKey(), outbox.getPayload()).get(5, TimeUnit.SECONDS);
+                stringKafkaTemplate.send(topic, outbox.getIdempotentKey(), outbox.getPayload()).get(5, TimeUnit.SECONDS);
 
                 outbox.setStatus("PROCESSED");
 

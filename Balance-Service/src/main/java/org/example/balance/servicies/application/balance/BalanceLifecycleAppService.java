@@ -44,7 +44,7 @@ public class BalanceLifecycleAppService {
     }
 
     @Transactional
-    public void createSystemBalance() {
+    public Long createSystemBalance() {
         log.info("Создание системного счёта");
 
         Balance systemBalance = balanceService.createBalance(null, true);
@@ -54,6 +54,8 @@ public class BalanceLifecycleAppService {
         );
 
         outboxService.saveToOutbox("CREATE_SYSTEM_BALANCE", dto);
+
+        return systemBalance.getId();
     }
 
     @Transactional
