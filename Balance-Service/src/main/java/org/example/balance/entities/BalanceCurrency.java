@@ -11,7 +11,7 @@ import org.example.balance.enums.balance.Currency;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "transactions")
+@Table(name = "balance_currencies")
 @ToString
 @Getter
 @Setter
@@ -29,6 +29,7 @@ public class BalanceCurrency {
 
     @NotNull
     @Positive
+    @Column(nullable = false, precision = 19, scale = 6)
     private BigDecimal multiply;
 
 }

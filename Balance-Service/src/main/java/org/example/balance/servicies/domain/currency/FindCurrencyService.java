@@ -3,6 +3,7 @@ package org.example.balance.servicies.domain.currency;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.balance.entities.BalanceCurrency;
+import org.example.balance.enums.balance.Currency;
 import org.example.balance.repositories.BalanceCurrencyRepository;
 import org.example.exceptions.domain.client.NotFound;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class FindCurrencyService {
     }
 
     @Transactional(propagation = Propagation.MANDATORY, readOnly = true)
-    public BalanceCurrency findByCurrency(BalanceCurrency currency) {
+    public BalanceCurrency findByCurrency(Currency currency) {
         return balanceCurrencyRepository.findByCurrency(currency)
                 .orElseThrow(() -> new NotFound("Валюта не найдена"));
     }

@@ -3,6 +3,7 @@ package org.example.balance.repositories;
 import jakarta.persistence.LockModeType;
 import org.example.balance.entities.Balance;
 import org.example.balance.entities.BalanceCurrency;
+import org.example.balance.enums.balance.Currency;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -25,6 +26,6 @@ public interface BalanceCurrencyRepository extends JpaRepository<BalanceCurrency
     @Query("SELECT c FROM BalanceCurrency c WHERE c.currency = :currency")
     Optional<BalanceCurrency> findByCurrencyForUpdate(@Param("currency") BalanceCurrency currency);
 
-    Optional<BalanceCurrency> findByCurrency(BalanceCurrency currency);
+    Optional<BalanceCurrency> findByCurrency(Currency currency);
 
 }
